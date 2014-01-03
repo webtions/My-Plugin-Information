@@ -18,7 +18,7 @@ Communicate with WordPress.org Plugins API to retrive your Plugin Information
 
 == Description ==
 
-Want to display your WordPress.org hosted plugin data on your website? With this plugin you can communicate with WordPress.org Plugins API to retrive your Plugin Information.
+Want to display your WordPress.org hosted plugin data on your website? With this plugin you can communicate with WordPress.org Plugins API to retrieve your Plugin Information.
 
 
 Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugins/my-plugin-info/
