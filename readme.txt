@@ -3,8 +3,8 @@ Contributors: hchouhan, dreamsonline, dreamsmedia
 Donate link: http://www.dreamsonline.net
 Tags: plugin, directory, list, plugin directory, data, plugin data
 Requires at least: 3.0
-Tested up to: 3.6.1
-Stable tag: 0.1
+Tested up to: 4.2.2
+Stable tag: 0.2
 Last Updated: 2013-SEP-25
 Plugin Name: My Plugin Information
 Plugin URI: http://www.dreamsonline.net/wordpress-plugins/my-plugin-info/
@@ -40,6 +40,10 @@ Take a look at the [official "My Plugin Info" FAQ](http://www.dreamsonline.net/w
 
 
 == Changelog ==
+
+= 0.0.2 =
+
+* Code clean-up
 
 = 0.0.1
 * This is the first version

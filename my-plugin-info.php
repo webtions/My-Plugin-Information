@@ -3,7 +3,7 @@
 Plugin Name: My Plugin Info
 Plugin URI: http://www.dreamsonline.net/wordpress-plugins/my-plugin-info/
 Description: Communicate with WordPress.org Plugins API to retrive your Plugin Information
-Version: 0.1
+Version: 0.2
 Author: Dreams Online Themes
 Author Email: hello@dreamsmedia.in
 License:
@@ -25,8 +25,9 @@ License:
 
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-if ( ! class_exists( 'DOT_MyPluginInfo' ) )
-{
+
+
+if ( ! class_exists( 'DOT_MyPluginInfo' ) ) {
 
 	class DOT_MyPluginInfo {
 
@@ -34,58 +35,48 @@ if ( ! class_exists( 'DOT_MyPluginInfo' ) )
 		/**
 		 * Constructor
 		 */
-		function __construct() {
+		public function __construct() {
 			//Hook up to the init action
-			add_action( 'init', array( &$this, 'init_my_plugin_info' ) );
-		}
-
-		/**
-		 * Runs when the plugin is activated
-		 */
-		function install_my_plugin_info() {
-			// do not generate any output here
+			add_action( 'init', array( $this, 'init' ) );
 		}
 
 		/**
 		 * Runs when the plugin is initialized
 		 */
-		function init_my_plugin_info() {
+		public function init() {
 
 			// Register the shortcode [mpi slug='my-plugin-info' field='version']
-			add_shortcode( 'mpi', array( &$this, 'render_mpi' ) );
+			add_shortcode( 'mpi', array( $this, 'output' ) );
 		}
 
 
-		function render_mpi($atts) {
+		public function output( $atts = array() ) {
 
 			// get our variable from $atts
-			extract(shortcode_atts(array(
+			$atts = shortcode_atts( array(
 				'slug' => '', //foo is a default value
 				'field' => ''
-				), $atts));
+				), $atts );
 
 			/**
-			 * Check if slug exists
+			 * Slug & field must both be givens
 			 */
-			if ( !$slug ) {
+			if ( '' === $atts['slug'] || '' === $atts['field'] ) {
 				return false;
 			}
 
-
 			// Sanitize slug attribute
-			$slug = sanitize_title( $slug );
-
+			$slug = sanitize_title( $atts['slug'] );
 
 			// Create a empty array with variable name different based on plugin slug
-			$mpi_transient_name = 'mpi' . $slug;
-
+			$transient_name = 'mpi' . $slug;
 
 			/**
 			 * Check if transient with the plugin data exists
 			 */
-			$mpi_info = get_transient( $mpi_transient_name );
+			$info = get_transient( $transient_name );
 
-			if ( empty( $mpi_info ) ) {
+			if ( empty( $info ) ) {
 
 				/**
 				 * Connect to WordPress.org using plugins_api
@@ -93,26 +84,19 @@ if ( ! class_exists( 'DOT_MyPluginInfo' ) )
 				 * http://wp.tutsplus.com/tutorials/plugins/communicating-with-the-wordpress-org-plugin-api/
 				 */
 				require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-				$mpi_info = plugins_api( 'plugin_information', array( 'slug' => $slug ) );
+				$info = plugins_api( 'plugin_information', array( 'slug' => $slug ) );
 
 
 				// Check for errors with the data returned from WordPress.org
-				if ( !$mpi_info or is_wp_error( $mpi_info ) ) {
+				if ( ! $info or is_wp_error( $info ) ) {
 					return false;
 				}
 
 
 				// Set a transient with the plugin data
 				// Use Options API with auto update cron job in next version.
-				set_transient($mpi_transient_name, $mpi_info, 1 * HOUR_IN_SECONDS );
-
-
-			} else {
-
-				$mpi_info = get_transient( $mpi_transient_name );
-
+				set_transient( $transient_name, $info, 1 * HOUR_IN_SECONDS );
 			}
-			//return $plugin_data[$slug];
 
 
 			/**
@@ -120,76 +104,69 @@ if ( ! class_exists( 'DOT_MyPluginInfo' ) )
 			 * Return value based on the field attribute
 			 */
 
-			if ( !$field ) {
 
-				return false;
-
-			} else {
-
-				// Sanitize field attribute
-				$field = sanitize_title( $field );
+			// Sanitize field attribute
+			$field = sanitize_title( $atts['field'] );
 
 
-				if ( $field == "downloaded" ) {
-		        	return $mpi_info->downloaded;
-		    	}
+			if ( $field == "downloaded" ) {
+	            return $info->downloaded;
+	        }
 
-				if ( $field == "name" ) {
-		        	return $mpi_info->name;
-		    	}
+			if ( $field == "name" ) {
+	            return $info->name;
+	        }
 
-				if ( $field == "slug" ) {
-		        	return $mpi_info->slug;
-		    	}
+			if ( $field == "slug" ) {
+	            return $info->slug;
+	        }
 
-				if ( $field == "version" ) {
-		        	return $mpi_info->version;
-		    	}
+			if ( $field == "version" ) {
+	            return $info->version;
+	        }
 
-				if ( $field == "author" ) {
-		        	return $mpi_info->author;
-		    	}
+			if ( $field == "author" ) {
+	            return $info->author;
+	        }
 
-				if ( $field == "author_profile" ) {
-		        	return $mpi_info->author_profile;
-		    	}
+			if ( $field == "author_profile" ) {
+	            return $info->author_profile;
+	        }
 
-				if ( $field == "last_updated" ) {
-		        	return $mpi_info->last_updated;
-		    	}
+			if ( $field == "last_updated" ) {
+	            return $info->last_updated;
+	        }
 
-				if ( $field == "download_link" ) {
-		        	return $mpi_info->download_link;
-		    	}
+			if ( $field == "download_link" ) {
+	            return $info->download_link;
+	        }
 
-				if ( $field == "requires" ) {
-					return $mpi_info->requires;
-				}
- 
-				if ( $field == "tested" ) {
-					return $mpi_info->tested;
-				}
+			if ( $field == "requires" ) {
+				return $info->requires;
+			}
 
-                /**
-                 * rating outputs a percentage, to get a number of stars like in the WP Plugin Repository, you need to divide the output by 20:
-                 * 
-                 * $percentage = do_shortcode( '[mpi slug="' . $slug . '" field="rating"]' );
-                 * $stars = $percentage / 20;
-                 * printf( __( 'Rating: %s out of 5 stars', 'textdomain' ), $stars );
-                 *
-                 */
-                if ( $field == "rating" ) {
-                    return $mpi_info->rating;
-                } 
+			if ( $field == "tested" ) {
+				return $info->tested;
+			}
 
-		    }
+            /**
+             * rating outputs a percentage, to get a number of stars like in the WP Plugin Repository, you need to divide the output by 20:
+             *
+             * $percentage = do_shortcode( '[mpi slug="' . $slug . '" field="rating"]' );
+             * $stars = $percentage / 20;
+             * printf( __( 'Rating: %s out of 5 stars', 'textdomain' ), $stars );
+             *
+             */
+            if ( $field == "rating" ) {
+                return $info->rating;
+            }
 
 		}
 
 
-	} // end class
-	new DOT_MyPluginInfo();
+	}
 
+	// create instance of class
+	global $my_plugin_information;
+	$my_plugin_information = new DOT_MyPluginInfo();
 }
-
-?>
